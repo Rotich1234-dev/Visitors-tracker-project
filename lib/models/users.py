@@ -53,6 +53,7 @@ def register():
     email VARCHAR(30),
     id_no VARCHAR(30),
     time_in DATETIME,
+    time_out DATETIME,
     reason_for_visit VARCHAR(300),
     car_plate VARCHAR(20)
 ); ''')
@@ -69,39 +70,72 @@ def register():
 
 
 def home():
-    print("Login, Register")
-    a = input("What would you like to do: ")
-    if a.lower() == "register":
+    print("Login, Register, Update Timeout")
+    action = input("What would you like to do: ").lower()
+    
+    if action == "register":
         register()
-    elif a.lower() == "login":
+    elif action == "login":
         login()
+    elif action == "update timeout":
+        update_time_out()
     else:
         print("Choose a valid option")
         home()
+
 
 # Function to log in a user
 
 
 def login():
-    l = input("Username: ")
-    l2 = input("Password: ")
+    first_name = input("First Name: ")
+    id_no = input("Id Number: ")
     conn = sqlite3.connect('visitors.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username=?", (l,))
-    user = c.fetchone()
+    c.execute("SELECT * FROM visitors WHERE first_name=? AND id_no=?", (first_name, id_no))
+    visitor = c.fetchone()
     conn.close()
 
-    if user and user[3] == l2:
-        print("Welcome, " + user[1])
+    if visitor:
+        print("Welcome back, " + visitor[1])
     else:
-        print("Incorrect username or password")
-        login()
-    home()
+        print("Incorrect first_name or id_no")
+        home()
+
+
+def update_time_out():
+    id_no = input("Id Number: ")
+    time_out = datetime.now()
+    conn = sqlite3.connect('visitors.db')
+    c = conn.cursor()
+    c.execute("UPDATE visitors SET time_out = ? WHERE id_no = ?", (time_out, id_no))
+    conn.commit()
+
+    # Update the users table based on id_no from visitors table if the table exists
+    c.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='users'")
+    users_table_exists = c.fetchone()
+    if users_table_exists:
+        c.execute("SELECT * FROM visitors WHERE id_no = ?", (id_no,))
+        visitor = c.fetchone()
+        if visitor:
+            c.execute("INSERT OR REPLACE INTO users (id, name) VALUES (?, ?)", (visitor[0], visitor[1]))
+            conn.commit()
+            print("Timeout updated successfully for visitor:", visitor[1])
+        else:
+            print("Visitor not found with the specified ID.")
+    else:
+        print("Users table does not exist, skipping update.")
+
+    conn.close()
+
+
+
+
 
 # Create the users table
 
 
 create_table()
 
-# Start the program
+# # Start the program
 home()
