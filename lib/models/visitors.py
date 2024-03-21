@@ -94,12 +94,13 @@ def home():
     print(" 3. Update Timeout")
     print(" 4. view")
     print(" 5. Exit")
+    print(" 6. Delete entry")
     print(" — — — — — — — — — — ")
     action = input("What would you like to do: ").lower()
     
     if action == "2":
         register()
-    elif action == "1":
+    elif action == "1": 
         login()
     elif action == "3":
         update_time_out()
@@ -108,6 +109,8 @@ def home():
     elif action == '5':
         os.system('clear') # For Windows
         print('----- Thank You -----')
+    elif action == "6" :
+        delete_company()
     else:
         print("Choose a valid option")
         home()
@@ -146,6 +149,20 @@ def update_time_out():
         conn.commit()  
         conn.close()
         print("Updated successfully.")
+
+def delete_company():
+    id = input("company id: ")
+    conn = sqlite3.connect('visitors.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM companies WHERE id = ?", (id))
+    c.execute("DELETE FROM companies WHERE id = ?", (id))
+    
+    if c.rowcount == 0:
+        print("Company not found.")
+    else:
+        conn.commit()  
+        conn.close()
+        print("company deleted successfully.")
 
 # Call the function to execute the update.
 home()
