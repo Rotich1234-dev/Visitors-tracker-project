@@ -1,19 +1,10 @@
 import sqlite3
-
+import os
 # Define the User class
 
 from datetime import datetime
 
 
-class Visitor:
-    def __init__(self, first_name, last_name, id_no,email,reason,car_plate):
-        self.first_name = first_name
-        self.last_name = last_name
-        self.id_no = id_no
-        self.email = email
-        self.reason = reason
-        self.car_plate = car_plate
-        self.loggedIn = True
 
 # Function to create the database table if it doesn't exist
 
@@ -37,9 +28,9 @@ def register():
     last_name = input("Last Name: ")
     id_no = input("Id Number: ")
     email = input("email: ")
+    company_id = input("company_id: ")
     reason_for_visit = input("reason: ")
     car_plate = input("car plate: ")
-    visitor = Visitor(first_name, last_name, id_no,email,reason_for_visit,car_plate)
     # print("Welcome, " + user.name)
     
     # Save user data to the database
@@ -53,14 +44,15 @@ def register():
     id_no VARCHAR(30),
     time_in DATETIME,
     time_out DATETIME,
+    company_id INTEGERR,
     visitor_experience VARCHAR(300),
     reason_for_visit VARCHAR(300),
     car_plate VARCHAR(20)
 ); ''')
     time_in = datetime.now()
 
-    c.execute("INSERT INTO visitors (first_name, last_name, email ,id_no, time_in, reason_for_visit, car_plate ) "
-              "VALUES (?, ?, ?, ?, ?, ?, ?)", (first_name,last_name, email, id_no, time_in, reason_for_visit, car_plate))
+    c.execute("INSERT INTO visitors (first_name, last_name, email ,id_no, time_in, company_id, reason_for_visit, car_plate ) "
+              "VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (first_name,last_name, email, id_no, time_in, company_id, reason_for_visit, car_plate))
     conn.commit()
     conn.close()
     print("========REGISTRATION SUCCESSFUL WELCOME!=========")
@@ -83,26 +75,39 @@ def getAllPosts():
         print(" ID Number : ", post[4])
         print(" Time In : ", post[5])
         print(" Time Out : ", post[6])
-        print(" Reason for Visit : ", post[7])
-        print(" Car Plate : ", post[9])
+        print(" visitor experience : ", post[8])
+        print(" Reason for Visit : ", post[9])
+        print(" Car Plate : ", post[10])
+        x = c.execute("SELECT name FROM companies where id="+str(post[7])+"")
+        y = x.fetchone()
+        print(" Company : ", y)
         print("\n")
+       
     print(' — — — SUCCESS — — — \n')
     conn.close()
     home()
 
 def home():
-    print("Login, Register, Update Timeout, view")
+    print(" — — — — MENU — — — -")
+    print(" 1. Login")
+    print(" 2. Register")
+    print(" 3. Update Timeout")
+    print(" 4. view")
+    print(" 5. Exit")
+    print(" — — — — — — — — — — ")
     action = input("What would you like to do: ").lower()
     
-    if action == "register":
+    if action == "2":
         register()
-    elif action == "login":
+    elif action == "1":
         login()
-    elif action == "update timeout":
+    elif action == "3":
         update_time_out()
-    elif action == "view":
+    elif action == "4":
         getAllPosts()
-        
+    elif action == '5':
+        os.system('clear') # For Windows
+        print('----- Thank You -----')
     else:
         print("Choose a valid option")
         home()
