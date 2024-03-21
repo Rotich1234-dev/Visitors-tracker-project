@@ -18,17 +18,16 @@ class Visitor:
 # Function to create the database table if it doesn't exist
 
 
-def create_table():
-    conn = sqlite3.connect('visitors.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY,
-                    name TEXT,
-                    username TEXT,
-                    password TEXT
-                )''')
-    conn.commit()
-    conn.close()
+# def create_table():
+#     conn = sqlite3.connect('visitors.db')
+#     c = conn.cursor()
+#     c.execute('''CREATE TABLE IF NOT EXISTS users (
+#                     id INTEGER PRIMARY KEY,
+#                     time_out DATETIME,
+#                     id_no VARCHAR(30)
+#                 )''')  
+#     conn.commit()
+#     conn.close()
 # Function to register a new user
 
 
@@ -54,6 +53,7 @@ def register():
     id_no VARCHAR(30),
     time_in DATETIME,
     time_out DATETIME,
+    visitor_experience VARCHAR(300),
     reason_for_visit VARCHAR(300),
     car_plate VARCHAR(20)
 ); ''')
@@ -67,10 +67,31 @@ def register():
     home()
 
 # Function to handle the main menu
-
+def getAllPosts():
+    conn = sqlite3.connect('visitors.db')
+    c = conn.cursor()
+    print(' — — — All Posts — — — \n')
+    c.execute("SELECT * FROM visitors")
+    postList = c.fetchall()
+    i = 0
+    for post in postList:
+        i += 1
+        print(" — — — Post ", i, " — — -")
+        print(" First Name : ", post[1])
+        print(" Last Name : ", post[2])
+        print(" Email : ", post[3])
+        print(" ID Number : ", post[4])
+        print(" Time In : ", post[5])
+        print(" Time Out : ", post[6])
+        print(" Reason for Visit : ", post[7])
+        print(" Car Plate : ", post[9])
+        print("\n")
+    print(' — — — SUCCESS — — — \n')
+    conn.close()
+    home()
 
 def home():
-    print("Login, Register, Update Timeout")
+    print("Login, Register, Update Timeout, view")
     action = input("What would you like to do: ").lower()
     
     if action == "register":
@@ -79,6 +100,9 @@ def home():
         login()
     elif action == "update timeout":
         update_time_out()
+    elif action == "view":
+        getAllPosts()
+        
     else:
         print("Choose a valid option")
         home()
@@ -97,45 +121,32 @@ def login():
     conn.close()
 
     if visitor:
-        print("Welcome back, " + visitor[1])
+        print("<<<<<Welcome back, " + visitor[1])
     else:
         print("Incorrect first_name or id_no")
-        home()
+    home()
 
 
 def update_time_out():
     id_no = input("Id Number: ")
+    visitor_experience = input("How was the experience: ")
     time_out = datetime.now()
     conn = sqlite3.connect('visitors.db')
     c = conn.cursor()
-    c.execute("UPDATE visitors SET time_out = ? WHERE id_no = ?", (time_out, id_no))
-    conn.commit()
-
-    # Update the users table based on id_no from visitors table if the table exists
-    c.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='users'")
-    users_table_exists = c.fetchone()
-    if users_table_exists:
-        c.execute("SELECT * FROM visitors WHERE id_no = ?", (id_no,))
-        visitor = c.fetchone()
-        if visitor:
-            c.execute("INSERT OR REPLACE INTO users (id, name) VALUES (?, ?)", (visitor[0], visitor[1]))
-            conn.commit()
-            print("Timeout updated successfully for visitor:", visitor[1])
-        else:
-            print("Visitor not found with the specified ID.")
+    c.execute("UPDATE visitors SET time_out = ?, visitor_experience = ? WHERE id_no = ?", (time_out, visitor_experience, id_no))
+    
+    if c.rowcount == 0:
+        print("Visitor not found.")
     else:
-        print("Users table does not exist, skipping update.")
+        conn.commit()  
+        conn.close()
+        print("Updated successfully.")
 
-    conn.close()
-
-
-
-
-
-# Create the users table
-
-
-create_table()
-
-# # Start the program
+# Call the function to execute the update.
 home()
+
+
+
+
+
+  
