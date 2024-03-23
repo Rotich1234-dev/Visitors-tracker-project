@@ -37,11 +37,15 @@ Usage:
 To use the Visitor Management System, follow these steps:
 
 Ensure you have Python installed on your system.
-Download the provided Python script (visitor_management.py) and SQLite database file (visitors.db) to your local machine.
-Run the Python script using a Python interpreter (e.g., python visitor_management.py).
+Download the provided Python script (visitors.py) and SQLite database file (visitors.db) to your local machine.
+Run the Python script using a Python interpreter (e.g., python visitors.py).
 Follow the on-screen instructions to perform various operations such as registration, login, viewing visitors/companies, updating visit records, and deleting visitor records.
 Note:
 
 Make sure to handle exceptions and input validation to ensure the robustness and reliability of the system.
 Ensure proper security measures are implemented, such as password hashing for user authentication and protection against SQL injection attacks.
 This is a basic implementation of a visitor management system and can be extended further to include additional features and functionalities as per specific requirements.
+
+### Author
+@Rotich Jane Jepkemboi
+jeanetterotich@gmail.com
