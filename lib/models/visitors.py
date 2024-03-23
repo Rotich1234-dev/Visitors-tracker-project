@@ -1,25 +1,6 @@
 import sqlite3
 import os
-# Define the User class
-
 from datetime import datetime
-
-
-
-# Function to create the database table if it doesn't exist
-
-
-# def create_table():
-#     conn = sqlite3.connect('visitors.db')
-#     c = conn.cursor()
-#     c.execute('''CREATE TABLE IF NOT EXISTS users (
-#                     id INTEGER PRIMARY KEY,
-#                     time_out DATETIME,
-#                     id_no VARCHAR(30)
-#                 )''')  
-#     conn.commit()
-#     conn.close()
-# Function to register a new user
 
 
 def register():
@@ -60,6 +41,23 @@ def register():
 
 # Function to handle the main menu
 def getAllPosts():
+    while True:
+        print(" — — — — VIEW REPORTS — — — -")
+        print(" 1. View Visitors")
+        print(" 2. View Companies")
+        print(" 0. Back")
+        action = input("What would you like to do: ").lower()
+        
+        if action == "1":
+            view_visitors()
+        elif action == "2":
+            view_companies()
+        elif action == "0":
+            home()
+        else:
+            print("Choose a valid option") 
+
+def view_visitors():
     conn = sqlite3.connect('visitors.db')
     c = conn.cursor()
     print(' — — — All Posts — — — \n')
@@ -85,14 +83,29 @@ def getAllPosts():
        
     print(' — — — SUCCESS — — — \n')
     conn.close()
-    home()
+    getAllPosts()
+
+def view_companies():
+    conn = sqlite3.connect('visitors.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM companies")
+    company_list = c.fetchall()
+    for i, company in enumerate(company_list, start=1):
+        print(f" --- Company {i} ---")
+        print("Name:", company[1])
+        print("Description:", company[2])
+        print("Location:", company[3])
+        print("Address:", company[4])
+        print()
+    conn.close()
+    getAllPosts()
 
 def home():
-    print(" — — — — MENU — — — -")
+    print(" — — — —MAIN MENU — — — -")
     print(" 1. Login")
     print(" 2. Register")
     print(" 3. Update Timeout")
-    print(" 4. view")
+    print(" 4. Reports")
     print(" 5. Exit")
     print(" 6. Delete entry")
     print(" — — — — — — — — — — ")
@@ -149,20 +162,22 @@ def update_time_out():
         conn.commit()  
         conn.close()
         print("Updated successfully.")
+    home()
 
 def delete_company():
     id = input("company id: ")
     conn = sqlite3.connect('visitors.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM companies WHERE id = ?", (id))
-    c.execute("DELETE FROM companies WHERE id = ?", (id))
+    # c.execute("SELECT * FROM companies WHERE id ="+id+"")
+    c.execute("DELETE FROM companies WHERE id ="+id+"")
     
     if c.rowcount == 0:
         print("Company not found.")
     else:
         conn.commit()  
         conn.close()
-        print("company deleted successfully.")
+        print("Company Deleted Successfully.>>>>>")
+    home()
 
 # Call the function to execute the update.
 home()
