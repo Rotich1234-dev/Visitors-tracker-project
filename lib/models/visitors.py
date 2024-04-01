@@ -122,6 +122,7 @@ def home():
     elif action == '5':
         os.system('clear') # For Windows
         print('----- Thank You -----')
+        exit()
     elif action == "6" :
         delete_company()
     else:
